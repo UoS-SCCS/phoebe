@@ -1,0 +1,363 @@
+
+
+(s1,S,1,[s1,k_d1s1,k_d2s1]){
+[]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1
+}
+
+{
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+}
+
+{
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+}
+
+{
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d1s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n2,kk1⟩⦄_k_d1s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),⟨n2,kk1⟩,d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d1s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d1s1
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n2,kk1⟩⦄_k_d1s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),⟨n2,kk1⟩,d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d1s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+}
+
+{
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d1s1
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n3,kk2)⦃⟨n3,kk2⟩⦄_k_d1s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n2,kk1⟩⦄_k_d1s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n3,kk2⟩⦄_k_d1s1,n3,kk2,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),⟨n2,kk1⟩,⟨n3,kk2⟩,d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d1s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d1s1
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n3,kk2)⦃⟨n3,kk2⟩⦄_k_d1s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n2,kk1⟩⦄_k_d1s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n3,kk2⟩⦄_k_d1s1,n3,kk2,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),⟨n2,kk1⟩,⟨n3,kk2⟩,d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d1s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+}
+
+{
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d1s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n2,kk1⟩⦄_k_d1s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),⟨n2,kk1⟩,d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+}
+
+{
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d1s1
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n3,kk2)⦃⟨n3,kk2⟩⦄_k_d1s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n2,kk1⟩⦄_k_d1s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n3,kk2⟩⦄_k_d1s1,n3,kk2,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),⟨n2,kk1⟩,⟨n3,kk2⟩,d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n3,kk2⟩⦄_k_d1s1,
+JoinNonce↦n3,
+DevAddr↦kk2
+}
+
+{
+[1.(d1,D,1,[d1,s1,k_d1s1])!: (n1)⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d1s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,⦃⟨n2,kk1⟩⦄_k_d1s1,n2,kk1,⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1),⟨n2,kk1⟩,d1,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d1,n1⟩,mac(⟨s1,d1,n1⟩;k_d1s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d1s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+}
+
+{
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+}
+
+{
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+}
+
+{
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d2s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n2,kk1⟩⦄_k_d2s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),⟨n2,kk1⟩,d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d2s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d2s1
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n2,kk1⟩⦄_k_d2s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),⟨n2,kk1⟩,d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d2s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+}
+
+{
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d2s1
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n3,kk2)⦃⟨n3,kk2⟩⦄_k_d2s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n2,kk1⟩⦄_k_d2s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n3,kk2⟩⦄_k_d2s1,n3,kk2,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),⟨n2,kk1⟩,⟨n3,kk2⟩,d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d2s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d2s1
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n3,kk2)⦃⟨n3,kk2⟩⦄_k_d2s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n2,kk1⟩⦄_k_d2s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n3,kk2⟩⦄_k_d2s1,n3,kk2,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),⟨n2,kk1⟩,⟨n3,kk2⟩,d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d2s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+}
+
+{
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d2s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n2,kk1⟩⦄_k_d2s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),⟨n2,kk1⟩,d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+}
+
+{
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,2,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,2,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d2s1
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n3,kk2)⦃⟨n3,kk2⟩⦄_k_d2s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n2,kk1⟩⦄_k_d2s1,n2,kk1,s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n3,kk2⟩⦄_k_d2s1,n3,kk2,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),⟨n2,kk1⟩,⟨n3,kk2⟩,d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n3,kk2⟩⦄_k_d2s1,
+JoinNonce↦n3,
+DevAddr↦kk2
+}
+
+{
+[1.(d2,D,1,[d2,s1,k_d2s1])!: (n1)⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,1.(s1,S,1,[s1,k_d1s1,k_d2s1])?: ()⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩
+,2.(s1,S,1,[s1,k_d1s1,k_d2s1])!: (n2,kk1)⦃⟨n2,kk1⟩⦄_k_d2s1
+]  
+ terms of (s1,S,1,[s1,k_d1s1,k_d2s1])[s1,k_d1s1,k_d2s1,⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,⦃⟨n2,kk1⟩⦄_k_d2s1,n2,kk1,⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1),⟨n2,kk1⟩,d2,n1]  
+ frame of (s1,S,1,[s1,k_d1s1,k_d2s1]): 
+ηS↦s1,
+Self↦s1,
+S↦s1,
+SSelf↦{k_d1s1,k_d2s1},
+SS↦{k_d1s1,k_d2s1},
+JoinEUI↦s1,
+⟨⟨JoinEUI,DevEUI,DevNonce⟩,mac(⟨JoinEUI,DevEUI,DevNonce⟩;NwkKey)⟩↦⟨⟨s1,d2,n1⟩,mac(⟨s1,d2,n1⟩;k_d2s1)⟩,
+⦃⟨JoinNonce,DevAddr⟩⦄_NwkKey↦⦃⟨n2,kk1⟩⦄_k_d2s1,
+JoinNonce↦n2,
+DevAddr↦kk1
+}
+
+
