@@ -1,0 +1,20 @@
+# Feldhofer protocol (symmetric-key mutual authentication for RFID).
+# Analysed for unlinkability by Hirschi, Baelde and Delaune (JCS 2019) and
+# Baelde, Delaune, Moreau (CSF 2020); concluded UNLINKABLE.
+#
+#   R -> T : nR
+#   T -> R : {| nR, nT |}k
+#   R -> T : {| nT, nR |}k
+#
+# k is a symmetric key shared between the tag T and the reader R.
+# The nonce echoes are enforced by Phoebe's matching-receive semantics, so the
+# receives need no explicit post-conditions (plain receives).
+
+protocol Feldhofer
+roles   R T
+nonces  NR NT
+keys    KT
+
+R -> T : NR                          ; new NR
+T -> R : {| < NR, NT > |}_KT         ; new NT
+R -> T : {| < NT, NR > |}_KT

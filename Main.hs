@@ -3,7 +3,9 @@ module Main where
 import PrivAuth
 import BasicHash
 import TagReader0
-import System.Environment (getArgs) 
+import Feldhofer (satKeyLinkFeld, satNameLinkFeld, satKeyWeakLinkFeld, satNameWeakLinkFeld)
+import HashLock (satNegStrongUnlinkabilityHL, satNegWeakUnlinkabilityHL)
+import System.Environment (getArgs)
 
 main :: IO ()
 
@@ -34,5 +36,14 @@ main = do
                                            -- 3sess:
        ["D"] -> putStrLn satNameWeakLinkTR0 -- 2sess:
                                             -- 3sess:
-                                       
+       -- FELDHOFER (new; unlinkable per Hirschi-Baelde-Delaune / Baelde-Delaune-Moreau)
+       ["F1"] -> putStrLn satNameLinkFeld     -- strong unlink by name  : Nothing/unlinkable (~90s)
+       ["F2"] -> putStrLn satKeyLinkFeld      -- strong unlink by key   : Nothing/unlinkable (~90s)
+       ["F3"] -> putStrLn satNameWeakLinkFeld -- weak unlink by name    : Nothing/unlinkable (~10s)
+       ["F4"] -> putStrLn satKeyWeakLinkFeld  -- weak unlink by key     : Nothing/unlinkable (~10s)
+       -- HASHLOCK (new; unlinkable per Hirschi-Baelde-Delaune)
+       ["H1"] -> putStrLn satNegStrongUnlinkabilityHL -- 2 names/3 sess: Attack (pigeonhole)
+       ["H2"] -> putStrLn satNegWeakUnlinkabilityHL   -- weak          : Nothing/unlinkable
+
+
 
