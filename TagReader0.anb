@@ -1,0 +1,19 @@
+# Tag-Reader protocol (Example 17 of Hirschi et al., "TagReader0")
+#
+#   T -> R : {| NT |}KT
+#   R -> T : {| NR |}KT
+#   T -> R : {| NR, NT |}KT
+#
+# `fresh` : the tag accepts NR only if it has not seen it before.
+# `match` : the reader accepts the final message only if it matches.
+# The trailing bare `recv` on step 3 adds the second, unconstrained reader
+# receive that the hand-written module also has.
+
+protocol TagReader0
+roles   T R
+nonces  NT NR
+keys    KT
+
+T -> R : {| NT |}_KT                 ; new NT
+R -> T : {| NR |}_KT                 ; new NR ; recv_pre fresh
+T -> R : {| < NR, NT > |}_KT         ; recv_post match ; recv
