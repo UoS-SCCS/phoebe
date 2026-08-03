@@ -39,7 +39,7 @@ towards a lazy Dolev-Yao engine.
   - the domains for protocol names, and long-term keys if necessary,
   - the maximum number of sessions.
 
-## What is new (since 2025)
+## What is new
 
 Recent additions to the tool (all preliminary work extending the CSF 2024
 release):

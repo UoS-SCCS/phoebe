@@ -1,6 +1,7 @@
 module HashLock
   ( satNegStrongUnlinkabilityHL, satNegWeakUnlinkabilityHL
-  , numTraces, numDone ) where
+  , numTraces, numDone
+  , hashLock, spy, negStrongUnlinkability, negWeakUnlinkability, tagsOut ) where
 import ProtModel
 import Data.Tree
 import Data.Maybe

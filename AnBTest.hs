@@ -75,6 +75,33 @@ paExpected =
   , Rec  2 A trues                             (SCrypt (AbsKey KK) (AbsNonce N))
   ]
 
+-- ---- Feldhofer (from Feldhofer.hs) ----------------------------------------
+feldExpected :: [Action]
+feldExpected =
+  [ Send 1 R true [AbsNonce NR] (AbsNonce NR)
+  , Rec  1 T trues              (AbsNonce NR)
+  , Send 2 T true [AbsNonce NT] (SCrypt (AbsKey KT) (Pair (AbsNonce NR) (AbsNonce NT)))
+  , Rec  2 R trues              (SCrypt (AbsKey KT) (Pair (AbsNonce NR) (AbsNonce NT)))
+  , Send 3 R true []            (SCrypt (AbsKey KT) (Pair (AbsNonce NT) (AbsNonce NR)))
+  , Rec  3 T trues              (SCrypt (AbsKey KT) (Pair (AbsNonce NT) (AbsNonce NR)))
+  ]
+
+-- ---- Hash-Lock (from HashLock.hs) -----------------------------------------
+hlPhi :: Stmt
+hlPhi = ExistsKey (VarKey "x")
+          ((VarKey "x" ∈ UAbsName R)
+             ∧ (Link (UAbsName R)
+                  ( Hash (Triple (AbsNonce NR) (AbsNonce NT) (AbsKey KT))
+                  , Hash (Triple (Abs (AbsNonce NR)) (Abs (AbsNonce NT)) (VarKey "x")))))
+
+hlExpected :: [Action]
+hlExpected =
+  [ Send 1 R true [AbsNonce NR] (AbsNonce NR)
+  , Rec  1 T trues              (AbsNonce NR)
+  , Send 2 T true [AbsNonce NT] (Pair (AbsNonce NT) (Hash (Triple (AbsNonce NR) (AbsNonce NT) (AbsKey KT))))
+  , Rec  2 R (true, hlPhi)      (Pair (AbsNonce NT) (Hash (Triple (AbsNonce NR) (AbsNonce NT) (AbsKey KT))))
+  ]
+
 -- ===========================================================================
 -- Rendering (Action has no Show instance; build one from the parts)
 -- ===========================================================================
@@ -120,6 +147,8 @@ main = do
   runCase okRef "BasicHash"  "examples/BasicHash.anb"  [("phi", bhPhi)]                          bhExpected
   runCase okRef "TagReader0" "examples/TagReader0.anb" [("fresh", trFresh), ("match", trMatch)]  trExpected
   runCase okRef "PrivAuth"   "examples/PrivAuth.anb"   [("phi", paPhi)]                          paExpected
+  runCase okRef "Feldhofer"  "examples/Feldhofer.anb"  []                                        feldExpected
+  runCase okRef "HashLock"   "examples/HashLock.anb"   [("phi", hlPhi)]                          hlExpected
   ok <- readIORef okRef
   if ok then putStrLn "ALL ROUND-TRIP CHECKS PASSED" >> exitSuccess
         else putStrLn "SOME CHECKS FAILED" >> exitFailure
