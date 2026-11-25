@@ -53,7 +53,8 @@ enabledESend ag (Send i r phi pts pt) tr =
     [ ESend i (r, ag) freshmaps (pt, msg) | atomSubs pt `isSublistOf` frameDom (freshmaps `L.union` frame ag tr)]
       where
         -- Prelude.map applies a function to a list argument, returns a list of image
-        freshmaps = Prelude.map (makeFreshMap ag tr) pts  
+        -- several fresh values generated in one step receive distinct numbers
+        freshmaps = makeFreshMaps tr pts
         -- msg = tLift (fromList (freshmaps `L.union` links ag tr)) pt
         msg = tLift (fromList (freshmaps `L.union` frame ag tr)) pt
 
@@ -69,6 +70,17 @@ possSigmaImages (AbsDatum pk) trms  = L.nub [Name d | Name d <- concatMap subter
 makeFreshMap :: Agent -> Trace -> AbsTerm -> Mapping 
 makeFreshMap ag tr (AbsNonce n) = (AbsNonce n, Nonce (maxNonceTrace tr + 1))
 makeFreshMap ag tr (AbsKey sk)  = (AbsKey sk, Key (SsKey (maxSsKeyTrace tr + 1)))
+
+-- | fresh values for all the variables a send action declares as new; with a
+-- single nonce and a single key this coincides with `makeFreshMap`
+makeFreshMaps :: Trace -> [AbsTerm] -> [Mapping]
+makeFreshMaps tr = go (maxNonceTrace tr + 1) (maxSsKeyTrace tr + 1)
+  where
+    go :: Int -> Int -> [AbsTerm] -> [Mapping]
+    go n k (AbsNonce x : r) = (AbsNonce x, Nonce n) : go (n + 1) k r
+    go n k (AbsKey x : r)   = (AbsKey x, Key (SsKey k)) : go n (k + 1) r
+    go n k (_ : r)          = go n k r
+    go _ _ []               = []
 ----------------------------------------------------
 
 
@@ -147,6 +159,10 @@ maxNonceTrace s =
     maxNonceTrace' (SCrypt k m)      = max (maxNonceTrace' k) (maxNonceTrace' m)
     maxNonceTrace' (Hash m)          = maxNonceTrace' m
     maxNonceTrace' (Mac k m)         = max (maxNonceTrace' k) (maxNonceTrace' m)
+    maxNonceTrace' (Nym z f)         = max (maxNonceTrace' z) (maxNonceTrace' f)
+    maxNonceTrace' (Sign a m)        = maxNonceTrace' m
+    maxNonceTrace' (Zk st ws ps)     = maximum (0 : map maxNonceTrace' (ws ++ ps))
+    maxNonceTrace' _                 = 0
 
 maxSsKeyTrace :: Trace -> Int
 maxSsKeyTrace s = maximum (0:[maxSsKeyTrace' m | ESend n a ms (pm, m) <- s]) 
@@ -164,6 +180,10 @@ maxSsKeyTrace s = maximum (0:[maxSsKeyTrace' m | ESend n a ms (pm, m) <- s])
     maxSsKeyTrace' (SCrypt k m)      = max (maxSsKeyTrace' k) (maxSsKeyTrace' m)
     maxSsKeyTrace' (Hash m)          = maxSsKeyTrace' m
     maxSsKeyTrace' (Mac k m)         = max (maxSsKeyTrace' k) (maxSsKeyTrace' m)
+    maxSsKeyTrace' (Nym z f)         = max (maxSsKeyTrace' z) (maxSsKeyTrace' f)
+    maxSsKeyTrace' (Sign a m)        = maxSsKeyTrace' m
+    maxSsKeyTrace' (Zk st ws ps)     = maximum (0 : map maxSsKeyTrace' (ws ++ ps))
+    maxSsKeyTrace' _                 = 0
 
 filterTrace :: ProtocolSpec -> Trace ->  Agent -> Bool
 filterTrace prot tr ag = (constantWhitelist)
@@ -217,6 +237,8 @@ sees ag s = (_iniTerms ag `L.union` foldr (\e trm -> update e `L.union` trm) [] 
       | otherwise         = [] 
     update (ERec  n (r, ag') st (pm, m)) 
       | ag == ag'         = [m] 
+      -- CSF'24 Def. 11 (17): the intruder keeps the values it generated for an injection
+      | _name ag == Spy   = [t | (_, t) <- st]
       | otherwise         = []
 
 seesName :: Name -> Trace -> [Term] 
@@ -224,8 +246,21 @@ seesName a s = analz a (concat [sees ag s| ag <- aliveHonestAg s , _name ag == a
 
 
 analzP :: Agent -> [Term] -> [Mapping] -> [Mapping]
-analzP ag trms frm = closure (inj `orf` fst `orf` snd `orf` thrd `orf` dec `orf` sdec `orf` unhash `orf` unmac) frm 
+analzP ag trms frm = closure (inj `orf` fst `orf` snd `orf` thrd `orf` dec `orf` sdec `orf` unhash `orf` unmac
+                              `orf` zkpub `orf` zkwit `orf` unnym `orf` unsig) frm 
     where 
+      -- zero-knowledge extension --------------------------------------------
+      -- (Z1) the public components of a proof are always extractable
+      zkpub xs = [(pp, p) | (Zk _ pws pps, Zk _ ws ps) <- xs, (pp, p) <- zip pps ps]
+      -- (Z2) the witness components are linked only by an agent that holds all of them
+      zkwit xs = [(pw, w) | (Zk _ pws pps, Zk _ ws ps) <- xs, all (`elem` trms) ws, (pw, w) <- zip pws ws]
+      -- a pseudonym nym(z,f) is opened only by recomputation, i.e. when z and f are both held
+      unnym xs = [(pz, z) | (Nym pz pf, Nym z f) <- xs, z `elem` trms, f `elem` trms]
+              ++ [(pf, f) | (Nym pz pf, Nym z f) <- xs, z `elem` trms, f `elem` trms]
+      -- a signature reveals its message and its signer
+      unsig xs = [(pm, m) | (Sign pa pm, Sign a m) <- xs]
+              ++ [(pa, a) | (Sign pa pm, Sign a m) <- xs]
+      -- ----------------------------------------------------------------------
       inj xs   = xs
       fst xs   = [(px, x) | (Pair px py, Pair x y) <-xs]
               ++ [(px, x) | (Triple px py pz, Triple x y z) <-xs]
@@ -252,8 +287,16 @@ undeciph' ag trms (Triple x y z) = undeciph' ag trms x || undeciph' ag trms y ||
 undeciph' ag trms (Crypt (Name a) m) | _name ag /= a = True 
 undeciph' ag trms (SCrypt k m) | not (k `elem` trms) = True  
 undeciph' ag trms (Hash m) | not (m `elem` trms) = True
+-- zero-knowledge extension: an unopened proof, and a pseudonym that cannot be
+-- recomputed, are opaque; a signature is as readable as its message
+undeciph' ag trms (Zk st ws ps) | not (all (`elem` trms) ws) = True
+undeciph' ag trms (Nym z f) | not (z `elem` trms && f `elem` trms) = True
+undeciph' ag trms (Sign a m) = undeciph' ag trms m
 undeciph' ag trms (Nonce n) = True 
-undeciph' ag trms (Key n)  = True 
+-- CSF'24 Def. 15: only nonces and short-term keys are renamed by the bijection;
+-- a long-term key that the agent holds is recognised for what it is
+undeciph' ag trms (Key (SsKey n)) = True
+undeciph' ag trms (Key k)  = not (Key k `elem` trms)
 undeciph' ag trms _  = False 
 
 
@@ -305,6 +348,7 @@ truth0 (prot,tr) (EndHas (UAg ag) m)       =  unGrd m `elem` terms ag tr && step
 truth0 (prot,tr) (Link (UAg ag) (pt,t))    =  (pt, unGrd t) `elem` frame ag tr
 truth0 (prot,tr) (EndLink (UAg ag) (pt,t)) =  ((pt, unGrd t) `elem` frame ag tr)&&  step (_role ag) ag tr == maxStep (prot, _role ag)
 truth0 (prot,tr) (Listed (UAg ag) t)       =  (unGrd t `isSubtermOf` wlist ag)
+truth0 (prot,tr) (Verifies (UAg ag) at)    =  or [zkValid t | (at', t) <- frame ag tr, at' == at]
 -- truth0 (prot,tr) (Has (UAg ag) m)          = (unGrd m `elem` sees ag tr)
 -- truth0 (prot,tr) (Has (UName a) m)         = (unGrd m `elem` seesName a tr) 
 -- truth0 (prot,tr) (EndHas (UAg ag) m)       = unGrd m `elem` sees ag tr && step (_role ag) ag tr == maxStep (prot, _role ag)
@@ -330,7 +374,19 @@ maxStep (prot, r) = maximum [i | Send i r' ph fr msg <- _actions prot, r == Just
 -- to get the alive agents, we need the spy from prot in addition to alive agents from tr
 -- (alternatively we could have added Spy in the signature of events) 
 truth :: (ProtocolSpec,[Trace],Trace) -> Stmt -> Bool
-truth (prot,mdl,tr) f =  truth' (prot,mdl,tr) (empty,empty) f
+truth ctxt@(prot,mdl,tr) f = truthWith (pairwiseOracle mdl) ctxt f
+
+-- | A knowledge oracle returns, for an observer and a state, the states of the
+-- model that the observer cannot tell apart from it.  `truth` uses the pairwise
+-- oracle below; other oracles (e.g. precomputed classes) can be plugged in.
+type KOracle = Agent -> Trace -> [Trace]
+
+-- | legacy oracle: rescan the whole model with the pairwise relation `equiv`
+pairwiseOracle :: [Trace] -> KOracle
+pairwiseOracle mdl ag tr = [tr' | tr' <- mdl, equiv ag tr tr']
+
+truthWith :: KOracle -> (ProtocolSpec,[Trace],Trace) -> Stmt -> Bool
+truthWith kor (prot,mdl,tr) f =  truth' (prot,mdl,tr) (empty,empty) f
   where
     truth' :: (ProtocolSpec,[Trace],Trace) -> (Map LogicTerm LogicTerm, Map IndexTerm Agent) -> Stmt -> Bool 
     truth' (prot,mdl,tr) sigmas (BConst b)                 = b
@@ -343,6 +399,9 @@ truth (prot,mdl,tr) f =  truth' (prot,mdl,tr) (empty,empty) f
     truth' (prot,mdl,tr) (sigma, sigmaAg)  (EndLink (UAg ag) (pt,t))     = truth0 (prot,tr) (EndLink (UAg ag) (pt,(tLiftDelta sigma t) )) &&  ag `elem` (aliveAg prot tr)
     -- truth' (prot,mdl,tr) sigmas (Listed (UAg ag) t)        = truth0 (prot,tr) (deltaLift sigmas (Listed (UAg ag) t)) &&  ag `elem` (aliveAg prot tr)
     truth' (prot,mdl,tr) (sigma,sigmaAg) (Listed (UAg ag) t)        = truth0 (prot,tr) (Listed (UAg ag) (tLiftDelta sigma t)) &&  ag `elem` (aliveAg prot tr)
+    truth' (prot,mdl,tr) sigmas (Verifies (UAg ag) at)       = truth0 (prot,tr) (Verifies (UAg ag) at) && ag `elem` (aliveAg prot tr)
+    truth' (prot,mdl,tr) sigmas (Verifies (UVarAg x) at)     = truth' (prot,mdl,tr) sigmas (deltaLift sigmas (Verifies (UVarAg x) at))
+    truth' (prot,mdl,tr) sigmas (Verifies (UName a) at)      = or [truth0 (prot,tr) (Verifies (UAg ag) at) | ag <- (aliveAg prot tr), _name ag == a]
     truth' (prot,mdl,tr) sigmas (Link (UVarAg x) (pt,t))     = truth' (prot,mdl,tr) sigmas (deltaLift sigmas (Link (UVarAg x) (pt,t)))
     truth' (prot,mdl,tr) sigmas (EndLink (UVarAg x) (pt,t))  = truth' (prot,mdl,tr) sigmas (deltaLift sigmas (EndLink (UVarAg x) (pt,t)))
     truth' (prot,mdl,tr) sigmas (Listed (UVarAg x) t)        = truth' (prot,mdl,tr) sigmas (deltaLift sigmas (Listed (UVarAg x) t))
@@ -352,14 +411,16 @@ truth (prot,mdl,tr) f =  truth' (prot,mdl,tr) (empty,empty) f
     truth' ctxt sigmas (Disj fs)                           = or [truth' ctxt sigmas f | f <- fs]
     truth' ctxt sigmas (Imp f g)                           = truth' ctxt sigmas g || not (truth' ctxt sigmas f)
     truth' ctxt sigmas (Neg f)                             = not (truth' ctxt sigmas f)
-    truth' ctxt sigmas (K (UVarAg x) f)                      =  truth' ctxt sigmas (deltaLift sigmas (K (UVarAg x) f))
+    -- the observer variable is resolved here, and the body keeps its bindings, so
+    -- that quantifiers may occur under K_x (deltaLift has no case for them)
+    truth' ctxt sigmas@(_,sigmaAg) (K (UVarAg x) f)          =  truth' ctxt sigmas (K (UAg (sigmaAg!UVarAg x)) f)
     truth' (prot,mdl,tr) (sigma,sigmaAg)  (Link (UName a) (pt,t))    = or [truth0 (prot,tr) (Link (UAg ag) (pt,(tLiftDelta sigma t) ) ) | ag <- (aliveAg prot tr), _name ag == a]
     truth' (prot,mdl,tr) (sigma,sigmaAg) (EndLink (UName a) (pt,t)) = or [truth0 (prot,tr) (EndLink (UAg ag) (pt,(tLiftDelta sigma t)) ) | ag <- (aliveAg prot tr), _name ag == a, step (_role ag) ag tr == maxStep (prot, _role ag) ]
     truth' (prot,mdl,tr) (sigma,sigmaAg) (Listed (UName a) t)       = or [truth0 (prot,tr) (Listed (UAg ag) (tLiftDelta sigma t)) | ag <- (aliveAg prot tr), _name ag == a]
     truth' (prot,mdl,tr) (sigma,sigmaAg) (Has (UName a) m)          =  or [ truth0 (prot,tr) (Has (UAg ag) (tLiftDelta sigma m)) | ag <- (aliveAg prot tr), _name ag == a]
     truth' (prot,mdl,tr) (sigma,sigmaAg) (EndHas (UName a) m)       = or [truth0 (prot,tr) (EndHas (UAg ag) (tLiftDelta sigma m)) | ag <- (aliveAg prot tr), _name ag == a, step (_role ag) ag tr == maxStep (prot, _role ag)]
     truth' (prot,mdl,tr) sigmas (K (UName a) f)            = or [truth' (prot,mdl,tr) sigmas (K (UAg ag) f) | ag <- (aliveAg prot tr), _name ag == a]
-    truth' (prot,mdl,tr) sigmas (K (UAg ag) f)             = and [truth' (prot,mdl,tr') sigmas f | tr' <- mdl, equiv ag tr tr']
+    truth' (prot,mdl,tr) sigmas (K (UAg ag) f)             = and [truth' (prot,mdl,tr') sigmas f | tr' <- kor ag tr]
     truth' ctxt@(prot,mdl,tr) sigmas (P f)                 = or [truth' (prot,mdl,tr') sigmas f | tr' <- mdl, tr' `L.isPrefixOf` tr]
     truth' ctxt@(prot,mdl,tr) sigmas (F f)                 = or [truth' (prot,mdl,tr') sigmas f | tr' <- mdl, tr `L.isPrefixOf` tr']
     truth' ctxt@(prot,mdl,tr) sigmas@(sigma,sigmaAg) (ForAllAg (VarAg x) f) = and [truth' ctxt (sigma `union` map1 (VarAg x) (Grd (Name (_name ag))),sigmaAg `union` (map1 (UVarAg x) ag)) f | ag <- (aliveAg prot tr)]

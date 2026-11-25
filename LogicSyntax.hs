@@ -12,6 +12,40 @@ import HelperFunctions
 deriving instance Eq (Terms a)
 type Var = String
 
+-- =========================== ZERO-KNOWLEDGE STATEMENTS ======================
+-- A statement S is a finite conjunction of equations between constructor terms
+-- over witness placeholders (ZW i) and public placeholders (ZP j).  A proof
+-- term  zk_S(w1..wk ; p1..pl)  verifies iff every equation holds once the
+-- placeholders are replaced by the proof's components.
+data ZkT = ZW Int | ZP Int
+         | ZHash ZkT | ZNym ZkT ZkT | ZSign ZkT ZkT | ZPair ZkT ZkT
+    deriving (Eq, Ord, Show)
+
+data ZkStmt = ZkStmt { zkName :: String, zkEqs :: [(ZkT, ZkT)] }
+    deriving (Eq, Ord)
+
+instance Show ZkStmt where show = zkName
+
+-- | instantiate a statement term with a proof's witness and public components
+zkInst :: [Term] -> [Term] -> ZkT -> Maybe Term
+zkInst ws ps (ZW i)      = if i < length ws then Just (ws !! i) else Nothing
+zkInst ws ps (ZP j)      = if j < length ps then Just (ps !! j) else Nothing
+zkInst ws ps (ZHash t)   = Hash <$> zkInst ws ps t
+zkInst ws ps (ZNym b t)  = Nym  <$> zkInst ws ps b <*> zkInst ws ps t
+zkInst ws ps (ZSign a t) = Sign <$> zkInst ws ps a <*> zkInst ws ps t
+zkInst ws ps (ZPair a b) = Pair <$> zkInst ws ps a <*> zkInst ws ps b
+
+-- | the relation R_S: does  zk_S(ws ; ps)  verify?
+zkHolds :: ZkStmt -> [Term] -> [Term] -> Bool
+zkHolds st ws ps = and [ ok (zkInst ws ps l) (zkInst ws ps r) | (l, r) <- zkEqs st ]
+  where ok (Just a) (Just b) = a == b
+        ok _        _        = False
+
+-- | ver(t) = ok ?  (only proof terms can verify)
+zkValid :: Term -> Bool
+zkValid (Zk st ws ps) = zkHolds st ws ps
+zkValid _             = False
+
 data Terms a where
     -- Atomic Concrete Terms
     Const    :: Const -> Terms a
@@ -46,6 +80,10 @@ data Terms a where
     SCrypt   :: Terms a -> Terms a -> Terms a
     Hash     :: Terms a -> Terms a
     Mac      :: Terms a -> Terms a -> Terms a
+    -- Zero-knowledge extension
+    Nym      :: Terms a -> Terms a -> Terms a              -- nym(base, secret): deterministic, one-way
+    Sign     :: Terms a -> Terms a -> Terms a              -- sig_a(m): signature by principal a, with message recovery
+    Zk       :: ZkStmt -> [Terms a] -> [Terms a] -> Terms a  -- zk_S(witnesses ; publics)
     -- Undeciph Destructors 
     -- (owner is not necessary as we modelled public key encryption with Crypt a m not Crypt (pub(a)) m) 
     Proj1    :: Terms Grd -> Terms Grd
@@ -66,6 +104,9 @@ unGrd (Crypt a m) = Crypt (unGrd a) (unGrd m)
 unGrd (SCrypt k m) = SCrypt (unGrd k) (unGrd m)
 unGrd (Hash m) = Hash (unGrd m)
 unGrd (Mac k m) = Mac (unGrd k) (unGrd m) 
+unGrd (Nym z f) = Nym (unGrd z) (unGrd f)
+unGrd (Sign a m) = Sign (unGrd a) (unGrd m)
+unGrd (Zk st ws ps) = Zk st (map unGrd ws) (map unGrd ps)
 
 -- | we could have used these atoms directly in Terms a, by defining 
 -- CTerm :: Grd -> Terms Grd
@@ -79,6 +120,7 @@ type LogicTerm = Terms Logic -- ^ \[ \mathcal{T}(F, \mathcal{X}) \]
 type Nonce = Int
 
 data Name = Alice | Bob | Charlie | Tag Int | Reader Int | Device Int | Server Int | Spy  
+          | Prover Int | Verifier Int | Issuer Int
     deriving (Eq, Ord)
 
 data DatumName = JoinEUI | DevEUI 
@@ -87,13 +129,15 @@ data DatumName = JoinEUI | DevEUI
 data Key = LKey Int | SsKey Int | LShared Name Name
     deriving (Eq, Ord)
 
-data RoleName = A | B | C | T | R | DY | D | S-- ^$\mathcal{R}$
+data RoleName = A | B | C | T | R | DY | D | S | Pr | Vr | Iss -- ^$\mathcal{R}$
     deriving (Eq, Show, Ord)
 
-data NonceName = NA | NB | NC | N | NT | NR | ND | DevNonce | JoinNonce-- ^$\mathcal{N}$
+data NonceName = NA | NB | NC | N | NT | NR | ND | DevNonce | JoinNonce
+               | NZ | NRn | NM | NV -- ^$\mathcal{N}$
     deriving (Eq, Show, Ord)
 
-data KeyName = KK | KT | NwkKey | DevAddr | DData-- ^$\mathcal{K}$
+data KeyName = KK | KT | NwkKey | DevAddr | DData
+             | KF | KF1 | KF2 | KF3 -- ^$\mathcal{K}$
     deriving (Eq, Show, Ord)
 
 data Grd = CName Name | CNonce Int | CKey Key                -- dummy data type
@@ -118,6 +162,9 @@ tLiftDelta frm (Crypt a m)       = Crypt (tLiftDelta frm a) (tLiftDelta frm m)
 tLiftDelta frm (SCrypt k m)      = SCrypt (tLiftDelta frm k) (tLiftDelta frm m)
 tLiftDelta frm (Mac k m)         = Mac (tLiftDelta frm k) (tLiftDelta frm m)
 tLiftDelta frm (Hash m)          = Hash (tLiftDelta frm m)
+tLiftDelta frm (Nym z f)         = Nym (tLiftDelta frm z) (tLiftDelta frm f)
+tLiftDelta frm (Sign a m)        = Sign (tLiftDelta frm a) (tLiftDelta frm m)
+tLiftDelta frm (Zk st ws ps)     = Zk st (map (tLiftDelta frm) ws) (map (tLiftDelta frm) ps)
 
 -- | σ(f(t)) = f(σ(t)) in logics
 tLiftSigma :: Map LogicTerm LogicTerm -> LogicTerm -> LogicTerm 
@@ -134,6 +181,9 @@ tLiftSigma frm (Crypt a m)       = Crypt (tLiftSigma frm a) (tLiftSigma frm m)
 tLiftSigma frm (SCrypt k m)      = SCrypt (tLiftSigma frm k) (tLiftSigma frm m)
 tLiftSigma frm (Hash m)          = Hash (tLiftSigma frm m)
 tLiftSigma frm (Mac k m)          = Mac (tLiftSigma frm k) (tLiftSigma frm m)
+tLiftSigma frm (Nym z f)         = Nym (tLiftSigma frm z) (tLiftSigma frm f)
+tLiftSigma frm (Sign a m)        = Sign (tLiftSigma frm a) (tLiftSigma frm m)
+tLiftSigma frm (Zk st ws ps)     = Zk st (map (tLiftSigma frm) ws) (map (tLiftSigma frm) ps)
 
 -- | σ(f(t)) = f(σ(t)) in protocol semantics
 tLift :: Map (Terms a) Term -> Terms a -> Term 
@@ -165,6 +215,15 @@ tLift frm (Hash m)
 tLift frm (Mac k m)
    | (Mac k m) `elem` (keys frm)            = frm!(Mac k m)
    | otherwise                              = Mac (frm!k) (tLift frm m)
+tLift frm (Nym z f)
+   | (Nym z f) `elem` (keys frm)            = frm!(Nym z f)
+   | otherwise                              = Nym (tLift frm z) (tLift frm f)
+tLift frm (Sign a m)
+   | (Sign a m) `elem` (keys frm)           = frm!(Sign a m)
+   | otherwise                              = Sign (tLift frm a) (tLift frm m)
+tLift frm (Zk st ws ps)
+   | (Zk st ws ps) `elem` (keys frm)        = frm!(Zk st ws ps)
+   | otherwise                              = Zk st (map (tLift frm) ws) (map (tLift frm) ps)
 
 subterms :: Terms a -> [Terms a]
 subterms (Const n)         = [Const n]
@@ -177,6 +236,7 @@ subterms (AbsNonce n)      = [AbsNonce n]
 subterms (AbsKey k)        = [AbsKey k]
 subterms (AbsDatum d)        = [AbsDatum d]
 subterms (PubKey a)        = [a, PubKey a]
+subterms (PrivKey a)       = [PrivKey a]
 subterms (Tuple ls)        = ls ++ concatMap subterms ls
 subterms (Pair t1 t2)      = subterms t1 `L.union` subterms t2 `L.union` [Pair t1 t2]
 subterms (Triple t1 t2 t3) = subterms t1 `L.union` subterms t2 `L.union` subterms t3 `L.union` [Triple t1 t2 t3]
@@ -184,6 +244,9 @@ subterms (Crypt a n)       = a:(subterms n) `L.union` [Crypt a n]
 subterms (SCrypt k n)      = k:(subterms n) `L.union` [SCrypt k n]
 subterms (Hash t)          = subterms t 
 subterms (Mac k t)          = k:(subterms t) 
+subterms (Nym z f)         = subterms z `L.union` subterms f `L.union` [Nym z f]
+subterms (Sign a m)        = subterms a `L.union` subterms m `L.union` [Sign a m]
+subterms (Zk st ws ps)     = L.nub (concatMap subterms ws ++ concatMap subterms ps) `L.union` [Zk st ws ps]
 
 atomSubs :: Terms a -> [Terms a]
 atomSubs trm = filter isAtomic (subterms trm)
@@ -203,6 +266,9 @@ isAtomic (Crypt a n) = False
 isAtomic (SCrypt k n) = False
 isAtomic (Hash t) = False
 isAtomic (Mac k t) = False
+isAtomic (Nym z f) = False
+isAtomic (Sign a m) = False
+isAtomic (Zk st ws ps) = False
 
 isSubtermOf :: Term -> Term -> Bool
 isSubtermOf t m = t `elem` subterms m
@@ -219,6 +285,10 @@ synthable (Crypt a m)       trms = (Crypt a m)`elem` trms || (synthable a trms &
 synthable (SCrypt k m)      trms = (SCrypt k m) `elem` trms || (synthable k trms &&  synthable m trms)
 synthable (Mac k m)         trms = (Mac k m) `elem` trms || (synthable k trms &&  synthable m trms)
 synthable (Hash m)          trms = (Hash m) `elem` trms ||(synthable m trms)
+-- nym and zk are public constructors; signing needs the signer's private key
+synthable (Nym z f)         trms = (Nym z f) `elem` trms || (synthable z trms && synthable f trms)
+synthable (Sign a m)        trms = (Sign a m) `elem` trms || (PrivKey a `elem` trms && synthable m trms)
+synthable (Zk st ws ps)     trms = (Zk st ws ps) `elem` trms || (all (\t -> synthable t trms) ws && all (\t -> synthable t trms) ps)
 
 -- e.g. recipe spyTerms ({A,n_A}_B, {alice, n0}_bob) = [({A,n_A}_B, {alice, n0}_bob)] if {alice,n0}_bob ∈ spyTerms and n0\not∈
 recipe :: [Term] -> Mapping  -> [Mapping]   
@@ -248,6 +318,20 @@ recipe trms (Mac ak am, Mac k m)
     | recipe trms (ak, k) /= [] &&  recipe trms (am, m) /= [] = recipe trms (ak, k) ++ recipe trms (am, m)  
     | Mac k m `elem` trms = [(Mac ak am, Mac k m)] 
     | otherwise = [] 
+recipe trms (Nym az af, Nym z f)
+    | recipe trms (az, z) /= [] &&  recipe trms (af, f) /= [] = recipe trms (az, z) ++ recipe trms (af, f)
+    | Nym z f `elem` trms = [(Nym az af, Nym z f)]
+    | otherwise = []
+recipe trms (Sign aa am, Sign a m)
+    | PrivKey a `elem` trms && recipe trms (am, m) /= [] = recipe trms (am, m) ++ recipe trms (aa, a)
+    | Sign a m `elem` trms = [(Sign aa am, Sign a m)]
+    | otherwise = []
+recipe trms (Zk ast aws aps, Zk st ws ps)
+    | length aws == length ws && length aps == length ps && all (/= []) parts = concat parts
+    | Zk st ws ps `elem` trms = [(Zk ast aws aps, Zk st ws ps)]
+    | otherwise = []
+  where parts = [recipe trms (a, t) | (a, t) <- zip aws ws ++ zip aps ps]
+recipe trms _ = []   -- shape mismatch between pattern and message: nothing prepared
 
 -- extract everything that can be extracted from Message wrt an agent
 analz :: Name -> [Term] -> [Term]
@@ -259,8 +343,12 @@ analz   a hs =
               ++ [y | Triple x y z <-xs]
         thd xs = [z | Triple x y z <-xs]
         dec xs = [x | Crypt a' x <- xs, a' == Name a]
-        sdec xs = [x | SCrypt k x <- xs, k<-xs]
-    in closure (inj `orf` fst `orf` snd `orf` thd `orf` dec  `orf` sdec) hs 
+        sdec xs = [x | SCrypt k x <- xs, k `elem` xs]   -- key possession required (was: k <- xs, which shadowed k)
+        -- zero-knowledge extension: a proof yields its public components only;
+        -- a signature yields the signed message (verification with message recovery)
+        zkpub xs = concat [ps | Zk st ws ps <- xs]
+        unsig xs = [m | Sign s m <- xs]
+    in closure (inj `orf` fst `orf` snd `orf` thd `orf` dec  `orf` sdec `orf` zkpub `orf` unsig) hs 
 
 
 match :: Map AbsTerm Term -> Map AbsTerm Term -> Bool  
@@ -311,6 +399,7 @@ data Stmt
     | Listed IndexTerm LogicTerm
     | EqI IndexTerm IndexTerm -- equality of index terms
     | Link IndexTerm (AbsTerm, LogicTerm) 
+    | Verifies IndexTerm AbsTerm   -- ver_u(tau): u's frame links tau to a proof that verifies
     | Conj [Stmt] 
     | Disj [Stmt] 
     | Imp Stmt Stmt
@@ -441,6 +530,8 @@ sigmaLift subs@(sigma,sigmaAg) (Link (UVarName x) (at,t))    = (Link (UVarName x
 sigmaLift subs@(sigma,sigmaAg) (EndHas (UVarName x) t)       = (EndHas (UVarName x) t)       
 sigmaLift subs@(sigma,sigmaAg) (EndLink (UVarName x) (at,t)) = (EndLink (UVarName x) (at,t)) 
 sigmaLift subs@(sigma,sigmaAg) (Listed (UVarName x) t)       = (Listed (UVarName x) t)       
+sigmaLift subs@(sigma,sigmaAg) (Verifies (UAbsName a) at)    = Verifies (UAg (sigmaAg!(UAbsName a))) at
+sigmaLift subs@(sigma,sigmaAg) (Verifies u at)               = Verifies u at
 sigmaLift subs@(sigma,sigmaAg) (Conj fs)                     = Conj (map (sigmaLift subs) fs)
 sigmaLift subs@(sigma,sigmaAg) (Disj fs)                     = Disj (map (sigmaLift subs) fs)
 sigmaLift subs@(sigma,sigmaAg) (Imp f g)                     = Imp (sigmaLift subs f) (sigmaLift subs g)
@@ -486,6 +577,9 @@ deltaLift subs@(delta,deltaAg) (Link (UVarName x) (at,t))    = Link (uName (delt
 deltaLift subs@(delta,deltaAg) (EndHas (UVarName x) t)       = EndHas (uName (delta!VarName x)) (tLiftDelta delta t)
 deltaLift subs@(delta,deltaAg) (EndLink (UVarName x) (at,t)) = EndLink (uName (delta!VarName x) ) (at, tLiftDelta delta t)
 deltaLift subs@(delta,deltaAg) (Listed (UVarName x) t)       = Listed (uName (delta!VarName x) ) (tLiftDelta delta t)
+deltaLift subs@(delta,deltaAg) (Verifies (UVarAg x) at)      = Verifies (UAg (deltaAg!UVarAg x)) at
+deltaLift subs@(delta,deltaAg) (Verifies (UVarName x) at)    = Verifies (uName (delta!VarName x)) at
+deltaLift subs@(delta,deltaAg) (Verifies u at)               = Verifies u at
 deltaLift subs@(delta,deltaAg) (Conj fs)                     = Conj (map (deltaLift subs) fs)
 deltaLift subs@(delta,deltaAg) (Disj fs)                     = Disj (map (deltaLift subs) fs)
 deltaLift subs@(delta,deltaAg) (Imp f g)                     = Imp (deltaLift subs f) (deltaLift subs g)
@@ -549,6 +643,9 @@ instance Show (Terms a)
     show (SCrypt k m) = "⦃"++show m++"⦄_"++show k
     show (Hash m) = "hash("++show m++")" 
     show (Mac k m) = "mac("++show m++";" ++ show k ++ ")" 
+    show (Nym z f) = "nym("++show z++","++show f++")"
+    show (Sign a m) = "sig_"++show a++"("++show m++")"
+    show (Zk st ws ps) = "zk"++show st++"("++showListC ws++" ; "++showListC ps++")"
     show (DCrypt m) = "DCrypt("++show m++")"
     show (DSCrypt m) = "DSCrypt("++show m++")"
     show (DHash m) = "DHash("++show m++")" 
@@ -566,6 +663,9 @@ instance Show Name
     show (Reader i) = "r"++show i
     show (Server i) = "s"++show i
     show (Device i) = "d"++show i
+    show (Prover i) = "p"++show i
+    show (Verifier i) = "v"++show i
+    show (Issuer i) = "is"++show i
 
 instance Show Key 
   where

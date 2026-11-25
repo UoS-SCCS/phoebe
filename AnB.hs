@@ -55,6 +55,7 @@ import LogicSyntax
 -- ---------------------------------------------------------------------------
 
 data Sort = SName | SNonce | SKey | SDatum
+          | SStmt ZkStmt          -- ^ a declared zero-knowledge statement
   deriving (Eq, Show)
 
 -- | @(pre, post)@ names for a single receive action.  'Nothing' means the
@@ -70,6 +71,7 @@ data Alt = Alt
   , aFresh    :: [AbsTerm]      -- ^ newly generated nonces / short-term keys
   , aSendTest :: Maybe String   -- ^ name of the send test (branch 0 only; branch 1 is its negation)
   , aRecv     :: [RecvCond]     -- ^ one entry per receive action (usually a singleton)
+  , aRecvMsg  :: Maybe AbsTerm  -- ^ the receiver's own parse of the message (annotation @recv_as@), if it differs
   }
   deriving (Show)
 
@@ -89,16 +91,18 @@ data AnBSpec = AnBSpec
 -- ---------------------------------------------------------------------------
 
 roleTable :: [(String, RoleName)]
-roleTable = [("A",A),("B",B),("C",C),("T",T),("R",R),("DY",DY),("D",D),("S",S)]
+roleTable = [("A",A),("B",B),("C",C),("T",T),("R",R),("DY",DY),("D",D),("S",S),("Pr",Pr),("Vr",Vr),("Iss",Iss)]
 
 nonceTable :: [(String, NonceName)]
 nonceTable =
   [ ("NA",NA),("NB",NB),("NC",NC),("N",N),("NT",NT),("NR",NR),("ND",ND)
-  , ("DevNonce",DevNonce),("JoinNonce",JoinNonce) ]
+  , ("DevNonce",DevNonce),("JoinNonce",JoinNonce)
+  , ("NZ",NZ),("NRn",NRn),("NM",NM),("NV",NV) ]
 
 keyTable :: [(String, KeyName)]
 keyTable =
-  [ ("KK",KK),("KT",KT),("NwkKey",NwkKey),("DevAddr",DevAddr),("DData",DData) ]
+  [ ("KK",KK),("KT",KT),("NwkKey",NwkKey),("DevAddr",DevAddr),("DData",DData)
+  , ("KF",KF),("KF1",KF1),("KF2",KF2),("KF3",KF3) ]
 
 datumTable :: [(String, DatumName)]
 datumTable = [("JoinEUI",JoinEUI),("DevEUI",DevEUI)]
@@ -130,12 +134,14 @@ resolveAtom env s = case sortOf env s of
   SNonce -> AbsNonce (look s nonceTable)
   SKey   -> AbsKey   (look s keyTable)
   SDatum -> AbsDatum (look s datumTable)
+  SStmt _ -> error ("AnB: " ++ show s ++ " is a statement name; use it as zk_" ++ s ++ "( ... | ... )")
 
 -- ---------------------------------------------------------------------------
 -- Message tokeniser
 -- ---------------------------------------------------------------------------
 
 data Tok = TLB | TRB | TLBs | TRBs | TLA | TRA | TLP | TRP | TComma | TUnder | TId String
+         | TBar | TEq | TAmp
   deriving (Eq, Show)
 
 lexMsg :: String -> [Tok]
@@ -152,6 +158,9 @@ lexMsg s@(c:cs)
   | c == ')'               = TRP  : lexMsg cs
   | c == ','               = TComma : lexMsg cs
   | c == '_'               = TUnder : lexMsg cs
+  | c == '|'               = TBar : lexMsg cs
+  | c == '='               = TEq  : lexMsg cs
+  | c == '&'               = TAmp : lexMsg cs
   | isIdentChar c          = let (w,rest) = span isIdentChar s in TId w : lexMsg rest
   | otherwise              = error ("AnB: unexpected character " ++ show c ++ " in message")
 
@@ -205,6 +214,15 @@ parseTerm env toks = case toks of
          (TRP:rest2) -> (m, rest2)
          _ -> error "AnB: expected ) "
 
+  -- proof term  zk_S( w1, ..., wk | p1, ..., pl )
+  (TId "zk" : TUnder : TId st : TLP : rest) ->
+    case lookup st env of
+      Just (SStmt stmt) ->
+        let (ws, r1) = parseArgs env TBar rest
+            (ps, r2) = parseArgs env TRP r1
+        in (Zk stmt ws ps, r2)
+      _ -> error ("AnB: undeclared statement " ++ show st)
+
   -- application or atom
   (TId f : TLP : rest) -> parseApp env f rest
   (TId x : rest)       -> (resolveAtom env x, rest)
@@ -221,7 +239,16 @@ parseTupleItems env toks =
        (TRA:rest')    -> ([t], rest')
        _ -> error "AnB: expected , or > in tuple"
 
--- | function applications:  hash(m) | mac(m,k) | pubk(A) | pk(A)
+-- | comma-separated terms up to (and consuming) the given closing token
+parseArgs :: [(String,Sort)] -> Tok -> [Tok] -> ([AbsTerm], [Tok])
+parseArgs env close toks =
+  let (t, rest) = parseTerm env toks
+  in case rest of
+       (TComma:rest') -> let (ts, rest'') = parseArgs env close rest' in (t:ts, rest'')
+       (c:rest') | c == close -> ([t], rest')
+       _ -> error ("AnB: expected , or " ++ show close ++ " in argument list")
+
+-- | function applications:  hash(m) | mac(m,k) | pubk(A) | pk(A) | nym(z,f) | sig(A,m)
 parseApp :: [(String,Sort)] -> String -> [Tok] -> (AbsTerm, [Tok])
 parseApp env f rest = case f of
   "hash" -> let (m, r) = parseTerm env rest in (Hash m, expectRP r)
@@ -232,6 +259,12 @@ parseApp env f rest = case f of
                  _ -> error "AnB: mac( m , K ) needs a key argument"
   "pubk" -> pk rest
   "pk"   -> pk rest
+  "nym"  -> case parseArgs env TRP rest of
+              ([z, x], r) -> (Nym z x, r)
+              _           -> error "AnB: nym( base , secret ) takes two arguments"
+  "sig"  -> case parseArgs env TRP rest of
+              ([a, m], r) -> (Sign a m, r)
+              _           -> error "AnB: sig( signer , message ) takes two arguments"
   _      -> error ("AnB: unknown function symbol " ++ show f)
   where
     pk r = let (a, r') = parseTerm env r in (PubKey a, expectRP r')
@@ -266,8 +299,10 @@ parseAnB input =
       stepLines = [l | l <- ls, not (isDecl l)]
       nm        = declValue "protocol" decls
       roles     = map roleOf (declWords "roles" decls)
+      stmts     = [ parseStatement (unwords (drop 1 (words l))) | l <- decls, take 1 (words l) == ["statement"] ]
       sorts     = concat
-                    [ [(w, SNonce) | w <- declWords "nonces" decls]
+                    [ [(zkName st, SStmt st) | st <- stmts]
+                    , [(w, SNonce) | w <- declWords "nonces" decls]
                     , [(w, SKey)   | w <- declWords "keys"   decls]
                     , [(w, SDatum) | w <- declWords "data"   decls]
                     , [(w, SName)  | w <- declWords "names"  decls] ]
@@ -287,7 +322,7 @@ stripComment = go
 
 isDecl :: String -> Bool
 isDecl l = case words l of
-  (w:_) -> w `elem` ["protocol","roles","nonces","keys","data","names"]
+  (w:_) -> w `elem` ["protocol","roles","nonces","keys","data","names","statement"]
   _     -> False
 
 declValue :: String -> [String] -> String
@@ -299,6 +334,41 @@ declWords :: String -> [String] -> [String]
 declWords key ls =
   concat [ dropCommas (drop 1 (words l)) | l <- ls, take 1 (words l) == [key] ]
   where dropCommas = concatMap (wordsBy (== ','))
+
+-- | A statement declaration:   NAME : lhs = rhs [ & lhs = rhs ]*
+--   over witness placeholders W0, W1, ... and public placeholders P0, P1, ...
+parseStatement :: String -> ZkStmt
+parseStatement str =
+  let (nm, body) = breakOn ':' str
+  in ZkStmt (trim nm) (eqs (lexMsg body))
+  where
+    eqs toks =
+      let (l, r1) = zkTerm toks
+      in case r1 of
+           (TEq:r2) -> let (r, r3) = zkTerm r2
+                       in case r3 of
+                            (TAmp:r4) -> (l, r) : eqs r4
+                            []        -> [(l, r)]
+                            _         -> error ("AnB: trailing tokens in statement " ++ show str)
+           _ -> error ("AnB: expected = in statement " ++ show str)
+    zkTerm (TId "hash" : TLP : r) = let (a, r1) = zkTerm r in (ZHash a, close r1)
+    zkTerm (TId "nym"  : TLP : r) = let (a, b, r1) = two r in (ZNym a b, r1)
+    zkTerm (TId "sig"  : TLP : r) = let (a, b, r1) = two r in (ZSign a b, r1)
+    zkTerm (TLA : r) = let (a, r1) = zkTerm r
+                       in case r1 of
+                            (TComma:r2) -> let (b, r3) = zkTerm r2
+                                           in case r3 of (TRA:r4) -> (ZPair a b, r4)
+                                                         _        -> error "AnB: expected > in statement"
+                            _ -> error "AnB: expected , in statement pair"
+    zkTerm (TId ('W':ds) : r) | not (null ds) && all (`elem` ['0'..'9']) ds = (ZW (read ds), r)
+    zkTerm (TId ('P':ds) : r) | not (null ds) && all (`elem` ['0'..'9']) ds = (ZP (read ds), r)
+    zkTerm toks = error ("AnB: cannot parse statement term at " ++ show toks)
+    two r = let (a, r1) = zkTerm r
+            in case r1 of
+                 (TComma:r2) -> let (b, r3) = zkTerm r2 in (a, b, close r3)
+                 _ -> error "AnB: expected , in statement"
+    close (TRP:r) = r
+    close _       = error "AnB: expected ) in statement"
 
 -- | Parse the ordered list of step lines, grouping '|' continuation lines
 --   into the preceding step as extra alternatives.
@@ -347,7 +417,8 @@ parseAlt env line =
                  , aMsg  = parseMsgWith env (trim msgStr)
                  , aFresh = []
                  , aSendTest = Nothing
-                 , aRecv = [(Nothing, Nothing)] }
+                 , aRecv = [(Nothing, Nothing)]
+                 , aRecvMsg = Nothing }
   in foldl' (applyAnn env) base annParts
 
 -- | Fold a single @; annotation@ into the alternative.
@@ -358,6 +429,7 @@ applyAnn env alt ann = case words ann of
   ["recv_pre", nm]    -> alt { aRecv = setLast (\(_,po) -> (Just nm, po)) (aRecv alt) }
   ["recv_post", nm]   -> alt { aRecv = setLast (\(pr,_) -> (pr, Just nm)) (aRecv alt) }
   ["recv"]            -> alt { aRecv = aRecv alt ++ [(Nothing, Nothing)] }
+  ("recv_as":rest)    -> alt { aRecvMsg = Just (parseMsgWith env (unwords rest)) }
   []                  -> alt
   _                   -> error ("AnB: unrecognised annotation " ++ show ann)
 
@@ -388,7 +460,7 @@ translate condEnv spec = (concatMap stepActions (sSteps spec), sRoles spec)
           [ Send i (aFrom a) (sendCond k) (aFresh a) (aMsg a)
           | (k, a) <- zip [0 ..] alts ]
         recs =
-          [ Rec i (aTo a) (resolve pre, resolve post) (aMsg a)
+          [ Rec i (aTo a) (resolve pre, resolve post) (maybe (aMsg a) id (aRecvMsg a))
           | a <- alts, (pre, post) <- aRecv a ]
         -- branch 0 uses its own test; later branches use the negation of it
         sendCond :: Int -> Stmt
@@ -415,7 +487,7 @@ genHs spec = unlines $
       where
         branch0 = case alts of (a0:_) -> aSendTest a0; _ -> Nothing
         sends = [ sendSrc i k a | (k, a) <- zip [0 :: Int ..] alts ]
-        recs  = [ recSrc i (aTo a) pre post (aMsg a)
+        recs  = [ recSrc i (aTo a) pre post (maybe (aMsg a) id (aRecvMsg a))
                 | a <- alts, (pre, post) <- aRecv a ]
         sendSrc i' k a =
           "Send " ++ show i' ++ " " ++ show (aFrom a) ++ " "
@@ -450,6 +522,11 @@ hsAbsTerm t = case t of
   SCrypt k m    -> "(SCrypt " ++ hsAbsTerm k ++ " " ++ hsAbsTerm m ++ ")"
   Hash m        -> "(Hash " ++ hsAbsTerm m ++ ")"
   Mac k m       -> "(Mac " ++ hsAbsTerm k ++ " " ++ hsAbsTerm m ++ ")"
+  Nym z f       -> "(Nym " ++ hsAbsTerm z ++ " " ++ hsAbsTerm f ++ ")"
+  Sign a m      -> "(Sign " ++ hsAbsTerm a ++ " " ++ hsAbsTerm m ++ ")"
+  Zk st ws ps   -> "(Zk (ZkStmt " ++ show (zkName st) ++ " " ++ show (zkEqs st) ++ ") ["
+                     ++ intercalate "," (map hsAbsTerm ws) ++ "] ["
+                     ++ intercalate "," (map hsAbsTerm ps) ++ "])"
   _             -> error "AnB: hsAbsTerm: unsupported term shape"
 
 -- ---------------------------------------------------------------------------

@@ -89,7 +89,7 @@ readerAgents =
           ] 
 
 negWeakUnlinkability :: Stmt
-negWeakUnlinkability = existsHonest [VarAg "x", VarAg "y"]  (UVarAg "x" `plays` T ∧ UVarAg "y" `plays` T ∧ K (UAg spy) (ExistsName (VarName "t") (UVarAg "x" `named` VarName "t" ∧ UVarAg "y" `named` VarName "t" ∧ nEqI (UVarAg "x") (UVarAg "x")  )))
+negWeakUnlinkability = existsHonest [VarAg "x", VarAg "y"]  (UVarAg "x" `plays` T ∧ UVarAg "y" `plays` T ∧ K (UAg spy) (ExistsName (VarName "t") (UVarAg "x" `named` VarName "t" ∧ UVarAg "y" `named` VarName "t" ∧ nEqI (UVarAg "x") (UVarAg "y")  )))
 
 -- negWeakUnlinkability =   (K (UAg spy) (ExistsName (VarName "y") (forAllHonest [VarAg "x"] (Link (UVarAg "x") (Role T, VarAg "x") `imp` (Link (UVarAg "x") (Self, VarName "y") )) ) ))
 

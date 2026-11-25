@@ -18,6 +18,7 @@ module Main where
 import ProtModel
 import LogicSyntax
 import HashLock (hashLock, spy, negStrongUnlinkability, negWeakUnlinkability, tagsOut)
+import Checks (bucketOracle)
 import Data.List (sort)
 import System.CPUTime (getCPUTime)
 import Text.Printf (printf)
@@ -39,7 +40,9 @@ check name f = do
              [tr | tr <- model, truth (hashLock, model, tr) f]
   classy <- timed "class-based (allSatK spy)"
              (allSatK spy (hashLock, model) f)
-  let ok = sort eager == sort classy
+  bucketed <- timed "bucketed oracle (Checks)"
+             [tr | tr <- model, truthWith (bucketOracle [spy] model) (hashLock, model, tr) f]
+  let ok = sort eager == sort classy && sort eager == sort bucketed
   printf "  satisfying-sets identical : %s\n\n" (show ok)
   return ok
 
