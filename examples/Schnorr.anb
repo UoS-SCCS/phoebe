@@ -1,0 +1,18 @@
+# Schnorr-style identification with a symbolic proof of knowledge.
+#
+#   Vr -> Pr : nV
+#   Pr -> Vr : h(k), zk_DL( k, r | h(k), nV )
+#
+# The statement DL says: the first public component is the hash of the first
+# hidden component.  Hidden components come before the bar, public ones after.
+# The verifier parses the proof with variables of its own for the hidden part
+# (recv_as) and then runs the verification test `ver` (recv_post).
+
+protocol Schnorr
+roles   Vr Pr
+nonces  NV NRn
+keys    KF KF1 KF2
+statement DL : P0 = hash(W0)
+
+Vr -> Pr : NV                                            ; new NV
+Pr -> Vr : < hash(KF), zk_DL(KF, NRn | hash(KF), NV) >   ; new NRn ; recv_as < hash(KF1), zk_DL(KF2, NRn | hash(KF1), NV) > ; recv_post ver
