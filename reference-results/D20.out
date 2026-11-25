@@ -1,0 +1,7 @@
+[D20] DAA/clear | total anonymity of platforms | FAILS | as expected | states=151 selected=63
+  counterexample:
+    1.(p1,Pr,1,[k1,sig_is1(k1),p1,is1])?: (n1)n1
+    1.(p1,Pr,2,[k1,sig_is1(k1),p1,is1])?: ()n1
+    2.(p1,Pr,1,[k1,sig_is1(k1),p1,is1])!: (n2,n3)⟨sig_is1(k1),zkDAA(k1,sig_is1(k1),n3 ; n2,nym(n2,k1),is1,n1)⟩
+    2.(p1,Pr,2,[k1,sig_is1(k1),p1,is1])!: (n4,n5)⟨sig_is1(k1),zkDAA(k1,sig_is1(k1),n5 ; n4,nym(n4,k1),is1,n1)⟩
+

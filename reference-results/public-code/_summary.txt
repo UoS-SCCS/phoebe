@@ -1,0 +1,19 @@
+1 rc=0 time=1.03s
+2 rc=0 time=5.59s
+a rc=0 time=13.02s
+b rc=0 time=0.16s
+c rc=0 time=10.49s
+d rc=0 time=0.02s
+e rc=0 time=6.45s
+f rc=0 time=0.03s
+A rc=0 time=5.58s
+B rc=0 time=12.37s
+C rc=0 time=5.52s
+D rc=0 time=5.43s
+F1 rc=0 time=65.16s
+F2 rc=0 time=66.37s
+F3 rc=0 time=7.71s
+F4 rc=0 time=8.04s
+H1 rc=0 time=0.27s
+H2 rc=0 time=2.85s
+DONE

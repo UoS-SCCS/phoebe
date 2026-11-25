@@ -1,0 +1,6 @@
+[AKG3] AKMA/Global, 3 requests | strong unlinkability by AKID (CSF'24) | FAILS | as expected | states=85 selected=64
+  counterexample:
+    1.(t1,T,1,[t1,r1,k1])!: ()⟨k1,r1⟩
+    1.(t1,T,2,[t1,r1,k1])!: ()⟨k1,r1⟩
+    1.(t1,T,3,[t1,r1,k1])!: ()⟨k1,r1⟩
+

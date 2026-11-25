@@ -1,0 +1,7 @@
+[S19] Schnorr/link | strong unlinkability of prover sessions | FAILS | as expected | states=133 selected=54
+  counterexample:
+    1.(p1,Pr,1,[k1,p1])?: (n1)n1
+    1.(p1,Pr,2,[k1,p1])?: ()n1
+    2.(p1,Pr,1,[k1,p1])!: (n2)⟨hash(k1),zkDL(k1,n2 ; hash(k1),n1)⟩
+    2.(p1,Pr,2,[k1,p1])!: (n3)⟨hash(k1),zkDL(k1,n3 ; hash(k1),n1)⟩
+

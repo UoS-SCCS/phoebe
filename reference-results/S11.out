@@ -1,0 +1,6 @@
+[S11] Schnorr/reveal | possession secrecy of the witness | FAILS | as expected | states=86 selected=85
+  counterexample:
+    1.(v1,Vr,1,[v1])!: (n1)n1
+    1.(p1,Pr,1,[k1,p1])?: ()n1
+    2.(p1,Pr,1,[k1,p1])!: (n2)⟨hash(k1),k1⟩
+

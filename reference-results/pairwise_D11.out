@@ -1,0 +1,7 @@
+[D11] DAA/basename | strong unlinkability, one basename | FAILS | as expected | states=2041 selected=216
+  counterexample:
+    1.(p1,Pr,1,[k1,sig_is1(k1),p1,is1])?: (i,n1)⟨i,n1⟩
+    1.(p1,Pr,2,[k1,sig_is1(k1),p1,is1])?: ()⟨i,n1⟩
+    2.(p1,Pr,1,[k1,sig_is1(k1),p1,is1])!: (n2)zkDAA(k1,sig_is1(k1),n2 ; hash(i),nym(hash(i),k1),is1,n1)
+    2.(p1,Pr,2,[k1,sig_is1(k1),p1,is1])!: (n3)zkDAA(k1,sig_is1(k1),n3 ; hash(i),nym(hash(i),k1),is1,n1)
+

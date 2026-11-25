@@ -1,0 +1,21 @@
+# Direct Anonymous Attestation, signing phase, random base.
+#
+#   Vr -> Pr : nV
+#   Pr -> Vr : zk_DAA( f, sig_I(f), r | zeta, nym(zeta, f), I, nV )
+#
+# The platform Pr holds a secret f and a credential sig_I(f) from the issuer.
+# Statement DAA: the second hidden component is the issuer's signature on the
+# first one, and the second public component is the pseudonym of the first
+# hidden component under the base given as first public component.
+# The verifier parses the hidden credential with a signer variable of its own
+# (DY) and then runs the verification test `ver`.
+
+protocol DAA
+roles   Vr Pr
+names   Iss DY
+nonces  NV NZ NRn
+keys    KF
+statement DAA : W1 = sig(P2, W0) & P1 = nym(P0, W0)
+
+Vr -> Pr : NV                                                         ; new NV
+Pr -> Vr : zk_DAA(KF, sig(Iss, KF), NRn | NZ, nym(NZ, KF), Iss, NV)   ; new NZ, NRn ; recv_as zk_DAA(KF, sig(DY, KF), NRn | NZ, nym(NZ, KF), Iss, NV) ; recv_post ver

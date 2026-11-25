@@ -1,0 +1,5 @@
+[AKG1] AKMA/Global, 2 requests | the intruder does not know two requests share an AKID | FAILS | as expected | states=21 selected=16
+  counterexample:
+    1.(t1,T,1,[t1,r1,k1])!: ()⟨k1,r1⟩
+    1.(t1,T,2,[t1,r1,k1])!: ()⟨k1,r1⟩
+

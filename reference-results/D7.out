@@ -1,0 +1,7 @@
+[D7] DAA/noverify | the verifier knows that a certified secret is held | FAILS | as expected | states=522 selected=521
+  counterexample:
+    1.(v1,Vr,1,[v1,is1])!: (n1)n1
+    1.(p1,Pr,1,[k1,sig_is1(k1),p1,is1])?: ()n1
+    2.(p1,Pr,1,[k1,sig_is1(k1),p1,is1])!: (n2,n3)zkDAA(k1,sig_is1(k1),n3 ; n2,nym(n2,k1),is1,n1)
+    2.(v1,Vr,1,[v1,is1])?: (k0,k0,i,n1,n1,n1,k0)zkDAA(k0,sig_i(k0),n1 ; n1,nym(n1,k0),is1,n1)
+

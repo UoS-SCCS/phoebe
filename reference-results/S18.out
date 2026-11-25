@@ -1,0 +1,6 @@
+[S18] Schnorr/bound | minimal witness hiding, intruder | FAILS | as expected | states=90 selected=89
+  counterexample:
+    1.(v1,Vr,1,[v1])!: (n1)n1
+    1.(p1,Pr,1,[k1,p1])?: ()n1
+    2.(p1,Pr,1,[k1,p1])!: (n2)⟨hash(k1),zkDL(k1,n2 ; hash(k1),n1)⟩
+

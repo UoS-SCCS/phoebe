@@ -1,0 +1,19 @@
+Schnorr/honest: states=174 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=154 both-roles-complete=98 provers-complete=108
+Schnorr/noverify: states=630 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=610 both-roles-complete=386 provers-complete=396
+Schnorr/reveal: states=86 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=66 both-roles-complete=44 provers-complete=54
+Schnorr/link: states=133 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=0 both-roles-complete=0 provers-complete=54
+Schnorr/reveal-anon: states=168 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=130 both-roles-complete=88 provers-complete=108
+Schnorr/bound: states=90 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=79 both-roles-complete=49 provers-complete=54
+DAA/honest: states=22 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=2 both-roles-complete=2 platforms-complete=12 rogue-signs=0
+DAA/honest+rogue: states=405 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=376 both-roles-complete=273 platforms-complete=288 rogue-signs=96
+DAA/noverify: states=522 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=502 both-roles-complete=362 platforms-complete=372 rogue-signs=0
+DAA/random: states=151 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=0 both-roles-complete=0 platforms-complete=63 rogue-signs=0
+DAA/basename: states=2041 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=0 both-roles-complete=0 platforms-complete=864 rogue-signs=0
+DAA/rogue: states=151 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=0 both-roles-complete=0 platforms-complete=63 rogue-signs=57
+DAA/clear: states=151 honest-sends-synthesizable=True fresh-distinct=True verifier-accepts=0 both-roles-complete=0 platforms-complete=63 rogue-signs=0
+AKMA/Global/2: states=21 honest-sends-synthesizable=True fresh-distinct=True complete=16 complete-cross-AF=8
+AKMA/Global/3: states=85 honest-sends-synthesizable=True fresh-distinct=True complete=64 complete-cross-AF=0
+AKMA/PerAf/2: states=21 honest-sends-synthesizable=True fresh-distinct=True complete=16 complete-cross-AF=8
+AKMA/PerAf/3: states=85 honest-sends-synthesizable=True fresh-distinct=True complete=64 complete-cross-AF=0
+AKMA/Fresh/2: states=21 honest-sends-synthesizable=True fresh-distinct=True complete=16 complete-cross-AF=8
+AKMA/Fresh/3: states=85 honest-sends-synthesizable=True fresh-distinct=True complete=64 complete-cross-AF=0

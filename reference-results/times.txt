@@ -1,0 +1,101 @@
+S1 0.06s
+S2 1.54s
+S3 0.12s
+S4 0.05s
+S5 0.10s
+S6 0.14s
+S7 0.37s
+S8 0.44s
+S9 0.07s
+S10 0.11s
+S11 0.01s
+S12 0.01s
+S13 0.01s
+S14 0.01s
+S15 0.01s
+S16 0.12s
+S17 0.02s
+S18 0.02s
+S19 0.02s
+S20 0.10s
+S21 0.05s
+S22 0.02s
+S23 0.02s
+S24 0.02s
+S25 0.05s
+D1 1.69s
+D2 1.67s
+D3 1.67s
+D4 3.73s
+D5 27.05s
+D6 1.75s
+D7 1.80s
+D8 0.07s
+D9 0.20s
+D10 0.08s
+D11 0.49s
+D12 1.15s
+D13 3.06s
+D14 0.06s
+D15 0.12s
+D16 0.06s
+D17 0.01s
+D18 0.02s
+D19 0.03s
+D20 0.02s
+D21 0.02s
+AKG1 0.01s
+AKG2 0.01s
+AKG3 0.01s
+AKG4 0.01s
+AKA1 0.01s
+AKA2 0.01s
+AKA3 0.01s
+AKA4 0.05s
+AKF1 0.01s
+AKF2 0.01s
+AKF3 0.12s
+AKF4 0.07s
+sanity 7.66s
+1 1.28s
+2 10.59s
+a 25.27s
+b 0.24s
+c 20.84s
+d 0.03s
+e 15.10s
+f 0.03s
+A 3.68s
+B 7.56s
+C 4.24s
+D 4.21s
+F1 34.73s
+F2 35.85s
+F3 9.34s
+F4 10.55s
+H1 0.77s
+H2 60.22s
+H1+ 0.56s
+H2+ 11.88s
+F1+ 9.20s
+F2+ 10.57s
+AK1 0.01s
+AK2 0.02s
+AKP1 0.14s
+AKP2 0.49s
+AKA 0.01s
+AKX 0.01s
+AKNV 0.01s
+AKPNV 0.01s
+pairwise S2 1.69s
+pairwise S7 0.90s
+pairwise S8 0.91s
+pairwise D2 1.86s
+pairwise D5 30.39s
+pairwise D7 1.74s
+pairwise D8 0.09s
+pairwise D11 0.44s
+pairwise D12 5.78s
+pairwise D13 81.14s
+pairwise D14 0.40s
+pairwise AKF3 0.13s

@@ -1,0 +1,13 @@
+# Basic-Hash RFID protocol (Example 8 in the Phoebe paper)
+#
+#   T -> R : NT, hash(NT, KT)
+#
+# The reader R accepts only if the hash matches some key in its list (the
+# lookup post-condition, supplied by the modeller as the formula `phi`).
+
+protocol BasicHash
+roles   T R
+nonces  NT
+keys    KT
+
+T -> R : < NT, hash(< NT, KT >) >   ; new NT ; recv_post phi

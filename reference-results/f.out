@@ -1,0 +1,4 @@
+Just [1.(a,A,1,[a,b,ka,kb,k*a])!: (n1){⟨a,n1⟩}_b
+,1.(a,C,1,[a,b,ka,kb,k*a])?: (b,n2,a){⟨b,n2⟩}_a
+,2.(a,C,1,[a,b,ka,kb,k*a])!: (n3){⟨a,n2,n3⟩}_b
+]
